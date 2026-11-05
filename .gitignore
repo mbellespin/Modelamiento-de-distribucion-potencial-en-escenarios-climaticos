@@ -1,0 +1,20 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+# Ignorar carpetas de datos pesados
+Capas_Originales/
+Capas_Procesadas/
+Resultados_UCB/Futuro/
+Resultados_UCB/Mapas_Binarios/
+Resultados_UCB/Incertidumbre_SD/
+Resultados_UCB/MESS_MoD/
+
+# Ignorar formatos espaciales en general
+*.tif
+*.asc
+*.shp
+*.shx
+*.dbf
+*.prj

@@ -1,0 +1,21 @@
+,,,,,
+Analisis,Contraste,Estadistico,Grados de Libertad,Valor p,Tamano del efecto (?²? ) 
+Efectos Globales (LMM),Escenario Climático,F = 28.99,"1, 65",< 0.001,0.31
+Efectos Globales (LMM),Año de Proyección,F = 11.66,"2, 65",< 0.001,0.26
+Efectos Globales (LMM),Interacción Temporal (Escenario:Año),F = 5.22,"2, 65",0.008,0.14
+Comparación de Escenarios,Corto Plazo (Año 2050),t = 0.78,65,0.438,-
+Comparación de Escenarios,Medio Plazo (Año 2070),t = 3.20,65,0.002,-
+Comparación de Escenarios,Largo Plazo (Año 2090),t = 5.35,65,< 0.001,-
+Dinámica Temporal (Tukey),SSP2-4.5: Transición 2050-2070,t = 0.69,65,0.768,-
+Dinámica Temporal (Tukey),SSP2-4.5: Transición 2070-2090,t = 0.43,65,0.903,-
+Dinámica Temporal (Tukey),SSP5-8.5: Transición 2050-2070,t = 3.11,65,0.008,-
+Dinámica Temporal (Tukey),SSP5-8.5: Transición 2070-2090,t = 2.58,65,0.032,-
+Dinámica Temporal (Tukey),SSP5-8.5: Acumulado 2050-2090,t = 5.69,65,< 0.001,-
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,

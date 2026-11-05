@@ -1,0 +1,8 @@
+"Escenario","Anio","Especies_Sobrevivientes","Min_Especies_Pixel","Max_Especies_Pixel","Media_Especies_Pixel","SD_Especies_Pixel"
+"Presente",2026,14,0,13,2.89,3.39
+"SSP245",2050,14,0,13,2.05,2.58
+"SSP245",2070,14,0,12,2.07,2.51
+"SSP245",2090,13,0,12,1.97,2.41
+"SSP585",2050,14,0,12,1.99,2.43
+"SSP585",2070,13,0,12,1.6,1.9
+"SSP585",2090,11,0,8,1.17,1.24
