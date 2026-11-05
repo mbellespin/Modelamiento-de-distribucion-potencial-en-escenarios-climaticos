@@ -1,6 +1,7 @@
 # Modelamiento espacial para distribución potencial en escenarios climáticos CMIP6
 
-Repositorio oficial del proyecto de investigación enfocado en la modelación de nicho ecológico y distribución potencial de anfibios neotropicales (familia Dendrobatidae) en la Amazonía del Ecuador, evaluando el impacto de escenarios de cambio climático enla distribución potencial de estas especies.
+Repositorio oficial del proyecto de investigación sobre modelamiento espacial de la distribución de anfibios (familia Dendrobatidae) en la Amazonía del Ecuador.
+Con el fin de proyectar y prever el impacto de escenarios de cambio climático en la distribución potencial de estas especies.
 
 ## 📂 Estructura del Repositorio
 
