@@ -195,8 +195,7 @@ for(sp in unique(presencias_base$especie)){
   pres_vals_list[[sp_tag]] <- pres_vals
   
   # Mapas de Idoneidad (continuo)
-  mapa_actual <- mask(crop(predict(molde_presente, modelo_final, type = "cloglog"), zona_estudio), zona_estudio)
-  writeRaster(mapa_actual, paste0(res_dir, "Idoneidad_Continua_", sp_tag, ".tif"), overwrite = TRUE)
+ mapa_actual <- mask(crop(predict(molde_presente, modelo_final, type = "cloglog", na.rm = TRUE), zona_alineada), zona_alineada)
   
   png(filename = paste0(res_dir, "Figura2_Idoneidad_", sp_tag, ".png"), width = 2100, height = 1800, res = 300)
   plot(mapa_actual, col = paleta_mapa, main = paste("Idoneidad de Hábitat Actual -", sp), plg = list(title = "Idoneidad"))
@@ -209,6 +208,7 @@ for(sp in unique(presencias_base$especie)){
 }
 
 write.csv(tabla_metricas, paste0(res_dir, "Tabla1_Metricas_Desempeno_VIF_UVB.csv"), row.names = FALSE)
+
 ```
 
 
@@ -346,8 +346,8 @@ for(sp in unique(presencias_base$especie)){
         clima_path <- paste0(path_manual, "Bioclim_Aligned_", gcm, "_ssp", ssp, "_", anio, ".tif")
         if(file.exists(clima_path)) {
           clima_futuro <- rast(clima_path)
-          pred_gcm <- predict(clima_futuro, modelo_final, type = "cloglog")
-          lista_gcm[[gcm]] <- mask(crop(pred_gcm, zona_estudio), zona_estudio)
+          pred_gcm <- predict(clima_futuro, modelo_final, type = "cloglog", na.rm = TRUE)
+          lista_gcm[[gcm]] <- mask(crop(pred_gcm, zona_alineada), zona_alineada)
         }
       }
       
@@ -384,13 +384,14 @@ write.csv(tabla_areas, paste0(res_dir, "Tabla2_Areas_Especies.csv"), row.names =
 ```
 
 
+
 ## 8. Riqueza potencial
 
 ```{r riqueza_y_deltas}
 # 1. Riqueza presente
-archivos_presente <- list.files(path_future, pattern = "^Binario_Presente_.*\\.tif$", full.names = TRUE)
+archivos_presente <- list.files(path_binary, pattern = "^Binario_Presente_.*\\.tif$", full.names = TRUE)
 stack_presente <- rast(archivos_presente)
-riqueza_presente <- mask(crop(sum(stack_presente, na.rm = TRUE), zona_estudio), zona_estudio)
+riqueza_presente <- mask(crop(sum(stack_presente, na.rm = TRUE), zona_alineada), zona_alineada)
 
 writeRaster(riqueza_presente, paste0(res_dir, "Riqueza_Comunitaria_Presente.tif"), overwrite = TRUE)
 
@@ -398,10 +399,10 @@ writeRaster(riqueza_presente, paste0(res_dir, "Riqueza_Comunitaria_Presente.tif"
 for(ssp in ssp_scenarios){
   for(anio in time_horizons){
     patron <- paste0("^Binario_.*_SSP", ssp, "_", anio, "\\.tif$")
-    archivos_futuro <- list.files(path_future, pattern = patron, full.names = TRUE)
+    archivos_futuro <- list.files(path_binary, pattern = patron, full.names = TRUE)
     
     if(length(archivos_futuro) > 0){
-      riqueza_futura <- mask(crop(sum(rast(archivos_futuro), na.rm = TRUE), zona_estudio), zona_estudio)
+      riqueza_futura <- mask(crop(sum(rast(archivos_futuro), na.rm = TRUE), zona_alineada), zona_alineada)
       writeRaster(riqueza_futura, paste0(path_future, "Riqueza_Comunitaria_SSP", ssp, "_", anio, ".tif"), overwrite = TRUE)
       
       # Cálculo del delta geográfico
@@ -412,15 +413,13 @@ for(ssp in ssp_scenarios){
 }
 ```
 
-
-9. Riqueza promedio en el SNAP
 ## 9. Riqueza promedio en el Sistema Nacional de Áreas Protegidas del Ecuador (SNAP)
 
 ```{r extraccion_snap}
-# Intersección espacial de los poligonos del SNAP con la zona de estudio (Amazonía ecuatoriana)
+# Intersección espacial de los poligonos del SNAP con la zona de estudio
 snap_raw <- vect("D:/Proyecto_RanasEcuador/SNAP2026/snap_amazonia.shp")
 snap_proj <- project(snap_raw, crs(riqueza_presente))
-snap_amazonico <- terra::intersect(snap_proj, zona_estudio)
+snap_amazonico <- terra::intersect(snap_proj, zona_alineada)
 
 # Extracción de la riqueza en el SNAP
 lista_obs_snap <- list()
@@ -445,7 +444,6 @@ tabla_lmm_snap <- do.call(rbind, lista_obs_snap) %>%
   filter(Riqueza_Presente >= 1) %>%
   mutate(Escenario = as.factor(Escenario), Anio = as.factor(Anio), Parque = as.factor(Parque))
 ```
-
 
 ## 10. Validación Estadística
 
@@ -512,3 +510,5 @@ emms_snap_full <- emmeans(modelo_snap, pairwise ~ Escenario | Anio, adjust = "tu
 write.csv(as.data.frame(emms_snap_full$emmeans), paste0(res_dir, "Tabla_EMMs_SNAP.csv"))
 write.csv(as.data.frame(emms_snap_full$contrasts), paste0(res_dir, "Tabla_PostHoc_SNAP.csv"))
 ```
+
+
