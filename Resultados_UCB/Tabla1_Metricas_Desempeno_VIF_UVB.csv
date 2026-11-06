@@ -1,0 +1,15 @@
+"Especie","Parametros","AUC","CBI","TSS","Threshold"
+"Hyloxalus yasuni","rm.1_fc.LQH",0.813,0.672,0.662,0.252
+"Ranitomeya variabilis","rm.2_fc.LQH",0.757,0.6,0.495,0.3702
+"Hyloxalus pulchellus","rm.2_fc.LQH",0.918,0.795,0.806,0.1954
+"Ameerega hahneli","rm.1_fc.LQH",0.851,0.508,0.693,0.4287
+"Ameerega bilinguis","rm.1_fc.LQH",0.817,0.507,0.694,0.4399
+"Hyloxalus bocagei","rm.1_fc.L",0.855,0.735,0.698,0.2395
+"Ameerega parvula","rm.1_fc.LQH",0.786,0.707,0.618,0.5143
+"Hyloxalus sauli","rm.2_fc.LQH",0.845,0.673,0.639,0.3906
+"Ranitomeya ventrimaculata","rm.2_fc.LQH",0.733,0.413,0.501,0.437
+"Hyloxalus cevallosi","rm.2_fc.LQH",0.955,0.612,0.859,0.5205
+"Hyloxalus italoi","rm.2_fc.LQH",0.861,NA,0.677,0.6743
+"Leucostethus fugax","rm.3_fc.LQH",0.832,0.497,0.662,0.3084
+"Hyloxalus nexipus","rm.1_fc.LQ",0.897,0.816,0.753,0.4313
+"Adelphobates quinquevittatus","rm.3_fc.LQH",0.904,0.747,0.729,0.531
