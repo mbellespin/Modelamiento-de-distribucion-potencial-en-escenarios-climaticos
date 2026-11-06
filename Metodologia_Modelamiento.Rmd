@@ -7,7 +7,7 @@ output: html_document
 
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, eval = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, eval = FALSE)
 
 library(terra)      
 library(raster)     
@@ -26,8 +26,8 @@ options(timeout = 600)
 ```
 
 
-1. Configuración de directorios
 ## 1. Configuración de directorios
+
 
 ```{r directorios_y_rutas}
 # Definición de rutas
@@ -53,8 +53,8 @@ ext_amazon <- ext(-80.0, -75.0, -7.0, 2.0)
 zona_estudio <- terra::vect("D:/shapeamaz/zestudio.shp")
 ```
 
-2. Procesamiento de capas base
 ## 2. Procesamiento de capas base
+
 
 ```{r preprocesamiento_hansen}
 # Configuración del sistema de coordenadas
@@ -88,8 +88,8 @@ bosque_final <- mask(bosque_final, zona_alineada)
 writeRaster(bosque_final, filename = paste0(path_out, "hansen_bosque.asc"), overwrite=TRUE)
 ```
 
-3. Selección de variables ambientales
 ## 3. Selección de variables ambientales
+
 
 ```{r seleccion_vif}
 bosque <- rast(paste0(path_out, "hansen_bosque.asc"))
@@ -134,7 +134,6 @@ title("Variables Seleccionadas (VIF < 5)", line = 1)
 dev.off() 
 ```
 
-4. Modelamiento Maxent
 ## 4. Modelamiento Maxent y distribución actual
 
 ```{r modelado_actual}
@@ -215,7 +214,7 @@ write.csv(tabla_metricas, paste0(res_dir, "Tabla1_Metricas_Desempeno_VIF_UVB.csv
 ## 5. Ensamblaje multimodelo CMIP6
 
 ```{r cmip6_procesamiento}
-# --- Fuente de información (COMENTADO COMO RESPALDO METODOLÓGICO) ---
+# --- Fuente de información ---
 # base_url <- "[https://geodata.ucdavis.edu/cmip6/tiles/](https://geodata.ucdavis.edu/cmip6/tiles/)"
 # gcm_models <- c("MIROC6", "IPSL-CM6A-LR", "CNRM-CM6-1")
 # ssp_scenarios <- c("245", "585")
@@ -245,15 +244,11 @@ write.csv(tabla_metricas, paste0(res_dir, "Tabla1_Metricas_Desempeno_VIF_UVB.csv
 #   }
 # }
 
-# --- NUEVO CÓDIGO DE LECTURA Y PROCESAMIENTO LOCAL ---
+# --- Archivos descargados de la fuente inicial y almacenados para procesamiento ---
 gcm_models <- c("MIROC6", "IPSL-CM6A-LR", "CNRM-CM6-1")
 ssp_scenarios <- c("245", "585")
 time_horizons <- c("2041-2060" = "2050", "2061-2080" = "2070", "2081-2100" = "2090")
-
-# Ruta exacta donde están tus tiles descargados
 path_tiles <- "D:/Proyecto_RanasEcuador/Capas_Originales/Futuro_Raw/climate/wc2.1_30s/"
-
-# Identificamos qué variables son clima y cuáles son estáticas
 vars_clim_retenidas <- vars_retenidas[grepl("bio", vars_retenidas)]
 vars_estaticas <- vars_retenidas[!grepl("bio", vars_retenidas)]
 
@@ -272,26 +267,21 @@ for (gcm in gcm_models) {
         }
         
         if(all(file.exists(tile_files))) {
-          # 1. Unir y alinear los cuadrantes de clima
+         
           merged_r <- terra::merge(terra::rast(tile_files[1]), terra::rast(tile_files[2]))
           aligned_r <- terra::resample(terra::crop(merged_r, ext_amazon), variables_finales, method = "bilinear")
           names(aligned_r) <- paste0("wc2.1_30s_bio_", 1:19)
           
-          # 2. Extraer SOLO las bioclimáticas retenidas
           r_clim <- terra::subset(aligned_r, vars_clim_retenidas)
-          
-          # 3. Extraer las variables estáticas (uvb, cobertura) de tus variables del presente
           r_estaticas <- terra::subset(variables_finales, vars_estaticas)
           
-          # 4. Juntar clima futuro + variables estáticas para crear el stack final
+          # stack final
           r_final_futuro <- c(r_clim, r_estaticas)
           
-          # 5. Guardar el raster definitivo para predecir
+          # raster para predicción
           terra::writeRaster(r_final_futuro, final_out_name, overwrite=TRUE)
           
-          cat("Procesado exitosamente:", basename(final_out_name), "\n")
-        } else {
-          cat("Faltan archivos locales para el ensamble de:", gcm, ssp, lapso, "\n")
+          
         }
       }
     }
@@ -299,8 +289,8 @@ for (gcm in gcm_models) {
 }
 ```
 
-6. Idoneidad del hábitat
 ## 6. Idoneidad del hábitat
+
 
 ```{r idoneidad_habitat}
 tabla_areas <- data.frame()
@@ -324,9 +314,8 @@ for(sp in unique(presencias_base$especie)){
 ```
 
 
-7. Incertidumbre (SD) y MESS
-
 ## 7. Incertidumbre promedio (SD) y Análisis de similitud ambiental (MESS)
+
 
 ```{r proyecciones_incertidumbre}
 # Bucle analítico (Proyecciones)
@@ -388,7 +377,7 @@ write.csv(tabla_areas, paste0(res_dir, "Tabla2_Areas_Especies.csv"), row.names =
 ## 8. Riqueza potencial
 
 ```{r riqueza_y_deltas}
-# 1. Riqueza presente
+# Riqueza presente
 archivos_presente <- list.files(path_binary, pattern = "^Binario_Presente_.*\\.tif$", full.names = TRUE)
 stack_presente <- rast(archivos_presente)
 riqueza_presente <- mask(crop(sum(stack_presente, na.rm = TRUE), zona_alineada), zona_alineada)
@@ -443,6 +432,7 @@ for(esc in ssp_scenarios) {
 tabla_lmm_snap <- do.call(rbind, lista_obs_snap) %>%
   filter(Riqueza_Presente >= 1) %>%
   mutate(Escenario = as.factor(Escenario), Anio = as.factor(Anio), Parque = as.factor(Parque))
+
 ```
 
 ## 10. Validación Estadística
