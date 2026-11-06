@@ -1,0 +1,15 @@
+Especie,Parametros,AUC,CBI
+Adelphobates quinquevittatus,rm.3_fc.LQH,0.904,0.747
+Ameerega bilinguis,rm.1_fc.LQH,0.817,0.507
+Ameerega hahneli,rm.1_fc.LQH,0.851,0.508
+Ameerega parvula,rm.1_fc.LQH,0.786,0.707
+Hyloxalus bocagei,rm.1_fc.L,0.855,0.735
+Hyloxalus cevallosi,rm.2_fc.LQH,0.955,0.612
+Hyloxalus italoi,rm.2_fc.LQH,0.861,0.73
+Hyloxalus nexipus,rm.1_fc.LQ,0.897,0.816
+Hyloxalus pulchellus,rm.2_fc.LQH,0.918,0.795
+Hyloxalus sauli,rm.2_fc.LQH,0.845,0.673
+Hyloxalus yasuni,rm.1_fc.LQH,0.813,0.672
+Leucostethus fugax,rm.3_fc.LQH,0.832,0.497
+Ranitomeya variabilis,rm.2_fc.LQH,0.757,0.6
+Ranitomeya ventrimaculata,rm.2_fc.LQH,0.733,0.413
