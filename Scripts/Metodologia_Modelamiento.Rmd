@@ -25,7 +25,9 @@ library(maxnet)
 options(timeout = 600) 
 ```
 
+
 ## 1. Configuración de directorios
+
 
 ```{r directorios_y_rutas}
 # Definición de rutas
@@ -52,6 +54,7 @@ zona_estudio <- terra::vect("D:/shapeamaz/zestudio.shp")
 ```
 
 ## 2. Procesamiento de capas base
+
 
 ```{r preprocesamiento_hansen}
 # Configuración del sistema de coordenadas
@@ -87,6 +90,7 @@ writeRaster(bosque_final, filename = paste0(path_out, "hansen_bosque.asc"), over
 
 ## 3. Selección de variables ambientales
 
+
 ```{r seleccion_vif}
 bosque <- rast(paste0(path_out, "hansen_bosque.asc"))
 names(bosque) <- "cobertura" 
@@ -95,7 +99,7 @@ lista_clima <- list.files(path_out, pattern = "wc2.1_30s_bio_.*\\.asc$", full.na
 clima_original <- rast(lista_clima)
 uvb_original <- rast(paste0(path_out, "uvb_radiation.asc"))
 names(uvb_original) <- "uvb_radiation"
-elevacion_original <- rast(paste0(path_out, "srtm_elevacion.asc")) 
+elevacion_original <- rast(paste0(path_out, "elevacion.asc")) 
 names(elevacion_original) <- "elevacion"
 
 clima_alineado <- resample(clima_original, bosque)
@@ -130,42 +134,7 @@ title("Variables Seleccionadas (VIF < 5)", line = 1)
 dev.off() 
 ```
 
-## 4. Ensamblaje multimodelo CMIP6
-
-```{r cmip6_descarga}
-base_url <- "[https://geodata.ucdavis.edu/cmip6/tiles/](https://geodata.ucdavis.edu/cmip6/tiles/)"
-gcm_models <- c("MIROC6", "IPSL-CM6A-LR", "CNRM-CM6-1")
-ssp_scenarios <- c("245", "585")
-time_horizons <- c("2041-2060" = "2050", "2061-2080" = "2070", "2081-2100" = "2090")
-
-# Procesamiento de modelos de circulación global
-for (gcm in gcm_models) {
-  for (ssp in ssp_scenarios) {
-    for (lapso in names(time_horizons)) {
-      year_tag <- time_horizons[[lapso]]
-      final_out_name <- paste0(path_manual, "Bioclim_Aligned_", gcm, "_ssp", ssp, "_", year_tag, ".tif")
-      
-      if(!file.exists(final_out_name)) {
-        tile_files <- c()
-        for (tile in c("28", "40")) { # Cuadrantes Norte y Sur
-          dest_tile <- file.path(path_manual, paste0("wc2.1_", gcm, "_ssp", ssp, "_", lapso, "_tile-", tile, ".tif"))
-          if (!file.exists(dest_tile)) try(download.file(paste0(base_url, gcm, "/ssp", ssp, "/", basename(dest_tile)), dest_tile, mode = "wb", quiet = TRUE))
-          tile_files <- c(tile_files, dest_tile)
-        }
-        
-        if(all(file.exists(tile_files))) {
-          merged_r <- terra::merge(terra::rast(tile_files[1]), terra::rast(tile_files[2]))
-          aligned_r <- terra::resample(terra::crop(merged_r, ext_amazon), variables_finales, method = "bilinear")
-          names(aligned_r) <- paste0("wc2.1_30s_bio_", 1:19)
-          terra::writeRaster(terra::subset(aligned_r, vars_retenidas), final_out_name, overwrite=TRUE)
-        }
-      }
-    }
-  }
-}
-```
-
-## 5. Modelamiento Maxent y distribución actual
+## 4. Modelamiento Maxent y distribución actual
 
 ```{r modelado_actual}
 # Carga de datos base 
@@ -220,14 +189,12 @@ for(sp in unique(presencias_base$especie)){
     CBI = round(cbi_final, 3), TSS = round(tss_val, 3), Threshold = round(umbral_optimo, 4)
   ))
   
-  
   modelos_list[[sp_tag]] <- modelo_final
   umbrales_list[[sp_tag]] <- umbral_optimo
   pres_vals_list[[sp_tag]] <- pres_vals
   
   # Mapas de Idoneidad (continuo)
-  mapa_actual <- mask(crop(predict(molde_presente, modelo_final, type = "cloglog"), zona_estudio), zona_estudio)
-  writeRaster(mapa_actual, paste0(res_dir, "Idoneidad_Continua_", sp_tag, ".tif"), overwrite = TRUE)
+ mapa_actual <- mask(crop(predict(molde_presente, modelo_final, type = "cloglog", na.rm = TRUE), zona_alineada), zona_alineada)
   
   png(filename = paste0(res_dir, "Figura2_Idoneidad_", sp_tag, ".png"), width = 2100, height = 1800, res = 300)
   plot(mapa_actual, col = paleta_mapa, main = paste("Idoneidad de Hábitat Actual -", sp), plg = list(title = "Idoneidad"))
@@ -240,13 +207,93 @@ for(sp in unique(presencias_base$especie)){
 }
 
 write.csv(tabla_metricas, paste0(res_dir, "Tabla1_Metricas_Desempeno_VIF_UVB.csv"), row.names = FALSE)
+
+```
+
+
+## 5. Ensamblaje multimodelo CMIP6
+
+```{r cmip6_procesamiento}
+# --- Fuente de información ---
+# base_url <- "[https://geodata.ucdavis.edu/cmip6/tiles/](https://geodata.ucdavis.edu/cmip6/tiles/)"
+# gcm_models <- c("MIROC6", "IPSL-CM6A-LR", "CNRM-CM6-1")
+# ssp_scenarios <- c("245", "585")
+# time_horizons <- c("2041-2060" = "2050", "2061-2080" = "2070", "2081-2100" = "2090")
+# 
+# for (gcm in gcm_models) {
+#   for (ssp in ssp_scenarios) {
+#     for (lapso in names(time_horizons)) {
+#       year_tag <- time_horizons[[lapso]]
+#       final_out_name <- paste0(path_manual, "Bioclim_Aligned_", gcm, "_ssp", ssp, "_", year_tag, ".tif")
+#       
+#       if(!file.exists(final_out_name)) {
+#         tile_files <- c()
+#         for (tile in c("28", "40")) { 
+#           dest_tile <- file.path(path_manual, paste0("wc2.1_", gcm, "_ssp", ssp, "_", lapso, "_tile-", tile, ".tif"))
+#           if (!file.exists(dest_tile)) try(download.file(paste0(base_url, gcm, "/ssp", ssp, "/", basename(dest_tile)), dest_tile, mode = "wb", quiet = TRUE))
+#           tile_files <- c(tile_files, dest_tile)
+#         }
+#         if(all(file.exists(tile_files))) {
+#           merged_r <- terra::merge(terra::rast(tile_files[1]), terra::rast(tile_files[2]))
+#           aligned_r <- terra::resample(terra::crop(merged_r, ext_amazon), variables_finales, method = "bilinear")
+#           names(aligned_r) <- paste0("wc2.1_30s_bio_", 1:19)
+#           terra::writeRaster(terra::subset(aligned_r, vars_retenidas), final_out_name, overwrite=TRUE)
+#         }
+#       }
+#     }
+#   }
+# }
+
+# --- Archivos descargados de la fuente inicial y almacenados para procesamiento ---
+gcm_models <- c("MIROC6", "IPSL-CM6A-LR", "CNRM-CM6-1")
+ssp_scenarios <- c("245", "585")
+time_horizons <- c("2041-2060" = "2050", "2061-2080" = "2070", "2081-2100" = "2090")
+path_tiles <- "D:/Proyecto_RanasEcuador/Capas_Originales/Futuro_Raw/climate/wc2.1_30s/"
+vars_clim_retenidas <- vars_retenidas[grepl("bio", vars_retenidas)]
+vars_estaticas <- vars_retenidas[!grepl("bio", vars_retenidas)]
+
+for (gcm in gcm_models) {
+  for (ssp in ssp_scenarios) {
+    for (lapso in names(time_horizons)) {
+      year_tag <- time_horizons[[lapso]]
+      final_out_name <- paste0(path_manual, "Bioclim_Aligned_", gcm, "_ssp", ssp, "_", year_tag, ".tif")
+      
+      if(!file.exists(final_out_name)) {
+        tile_files <- c()
+        
+        for (tile in c("28", "40")) { 
+          local_tile <- paste0(path_tiles, "wc2.1_30s_bioc_", gcm, "_ssp", ssp, "_", lapso, "_tile-", tile, ".tif")
+          tile_files <- c(tile_files, local_tile)
+        }
+        
+        if(all(file.exists(tile_files))) {
+         
+          merged_r <- terra::merge(terra::rast(tile_files[1]), terra::rast(tile_files[2]))
+          aligned_r <- terra::resample(terra::crop(merged_r, ext_amazon), variables_finales, method = "bilinear")
+          names(aligned_r) <- paste0("wc2.1_30s_bio_", 1:19)
+          
+          r_clim <- terra::subset(aligned_r, vars_clim_retenidas)
+          r_estaticas <- terra::subset(variables_finales, vars_estaticas)
+          
+          # stack final
+          r_final_futuro <- c(r_clim, r_estaticas)
+          
+          # raster para predicción
+          terra::writeRaster(r_final_futuro, final_out_name, overwrite=TRUE)
+          
+          
+        }
+      }
+    }
+  }
+}
 ```
 
 ## 6. Idoneidad del hábitat
 
+
 ```{r idoneidad_habitat}
 tabla_areas <- data.frame()
-
 
 for(sp in unique(presencias_base$especie)){
   sp_tag <- gsub(" ", "_", sp)
@@ -266,7 +313,9 @@ for(sp in unique(presencias_base$especie)){
 }
 ```
 
+
 ## 7. Incertidumbre promedio (SD) y Análisis de similitud ambiental (MESS)
+
 
 ```{r proyecciones_incertidumbre}
 # Bucle analítico (Proyecciones)
@@ -286,8 +335,8 @@ for(sp in unique(presencias_base$especie)){
         clima_path <- paste0(path_manual, "Bioclim_Aligned_", gcm, "_ssp", ssp, "_", anio, ".tif")
         if(file.exists(clima_path)) {
           clima_futuro <- rast(clima_path)
-          pred_gcm <- predict(clima_futuro, modelo_final, type = "cloglog")
-          lista_gcm[[gcm]] <- mask(crop(pred_gcm, zona_estudio), zona_estudio)
+          pred_gcm <- predict(clima_futuro, modelo_final, type = "cloglog", na.rm = TRUE)
+          lista_gcm[[gcm]] <- mask(crop(pred_gcm, zona_alineada), zona_alineada)
         }
       }
       
@@ -323,13 +372,15 @@ for(sp in unique(presencias_base$especie)){
 write.csv(tabla_areas, paste0(res_dir, "Tabla2_Areas_Especies.csv"), row.names = FALSE)
 ```
 
+
+
 ## 8. Riqueza potencial
 
 ```{r riqueza_y_deltas}
-# 1. Riqueza presente
-archivos_presente <- list.files(path_future, pattern = "^Binario_Presente_.*\\.tif$", full.names = TRUE)
+# Riqueza presente
+archivos_presente <- list.files(path_binary, pattern = "^Binario_Presente_.*\\.tif$", full.names = TRUE)
 stack_presente <- rast(archivos_presente)
-riqueza_presente <- mask(crop(sum(stack_presente, na.rm = TRUE), zona_estudio), zona_estudio)
+riqueza_presente <- mask(crop(sum(stack_presente, na.rm = TRUE), zona_alineada), zona_alineada)
 
 writeRaster(riqueza_presente, paste0(res_dir, "Riqueza_Comunitaria_Presente.tif"), overwrite = TRUE)
 
@@ -337,10 +388,10 @@ writeRaster(riqueza_presente, paste0(res_dir, "Riqueza_Comunitaria_Presente.tif"
 for(ssp in ssp_scenarios){
   for(anio in time_horizons){
     patron <- paste0("^Binario_.*_SSP", ssp, "_", anio, "\\.tif$")
-    archivos_futuro <- list.files(path_future, pattern = patron, full.names = TRUE)
+    archivos_futuro <- list.files(path_binary, pattern = patron, full.names = TRUE)
     
     if(length(archivos_futuro) > 0){
-      riqueza_futura <- mask(crop(sum(rast(archivos_futuro), na.rm = TRUE), zona_estudio), zona_estudio)
+      riqueza_futura <- mask(crop(sum(rast(archivos_futuro), na.rm = TRUE), zona_alineada), zona_alineada)
       writeRaster(riqueza_futura, paste0(path_future, "Riqueza_Comunitaria_SSP", ssp, "_", anio, ".tif"), overwrite = TRUE)
       
       # Cálculo del delta geográfico
@@ -351,13 +402,13 @@ for(ssp in ssp_scenarios){
 }
 ```
 
-## 9. Riqueza promedio en el Sistema Nacional de Áreas Protegidas del Ecuador(SNAP)
+## 9. Riqueza promedio en el Sistema Nacional de Áreas Protegidas del Ecuador (SNAP)
 
 ```{r extraccion_snap}
-# Intersección espacial de los poligonos del SNAP con la zona de estudio (Amazonía ecuatoriana)
+# Intersección espacial de los poligonos del SNAP con la zona de estudio
 snap_raw <- vect("D:/Proyecto_RanasEcuador/SNAP2026/snap_amazonia.shp")
 snap_proj <- project(snap_raw, crs(riqueza_presente))
-snap_amazonico <- terra::intersect(snap_proj, zona_estudio)
+snap_amazonico <- terra::intersect(snap_proj, zona_alineada)
 
 # Extracción de la riqueza en el SNAP
 lista_obs_snap <- list()
@@ -381,6 +432,7 @@ for(esc in ssp_scenarios) {
 tabla_lmm_snap <- do.call(rbind, lista_obs_snap) %>%
   filter(Riqueza_Presente >= 1) %>%
   mutate(Escenario = as.factor(Escenario), Anio = as.factor(Anio), Parque = as.factor(Parque))
+
 ```
 
 ## 10. Validación Estadística
@@ -448,3 +500,5 @@ emms_snap_full <- emmeans(modelo_snap, pairwise ~ Escenario | Anio, adjust = "tu
 write.csv(as.data.frame(emms_snap_full$emmeans), paste0(res_dir, "Tabla_EMMs_SNAP.csv"))
 write.csv(as.data.frame(emms_snap_full$contrasts), paste0(res_dir, "Tabla_PostHoc_SNAP.csv"))
 ```
+
+
