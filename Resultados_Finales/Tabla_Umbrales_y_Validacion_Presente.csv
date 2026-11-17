@@ -1,15 +1,15 @@
-"Especie","Config_FC","Param_RM","AUC_Validacion","Indice_Boyce_CBI","Umbral_SpecSens","Area_Presente_km2"
-"Hyloxalus yasuni","LQ",2,0.754519659660662,0.335,0.3857983,48750.6027537445
-"Ranitomeya variabilis","L",2,0.691245076561657,0.53975,0.45996406,56342.4791746559
-"Hyloxalus pulchellus","LQ",3,0.875062874976945,0.539,0.55739548,13373.1582913875
-"Ameerega hahneli","LQH",2,0.810397303013941,0.49275,0.39049357,38837.6088222391
-"Ameerega bilinguis","LQH",1,0.732885370635138,0.37475,0.53714118,26181.0275904742
-"Hyloxalus bocagei","L",1,0.727856248804958,0.4435,0.49018287,24212.6417486782
-"Ameerega parvula","LQ",1,0.735749376912464,0.71075,0.64685384,27825.1799957669
-"Hyloxalus sauli","LQH",3,0.809202479618562,0.71925,0.44988305,29304.5373319899
-"Ranitomeya ventrimaculata","LQH",1,0.708796355590001,0.46675,0.42123622,30217.033739591
-"Hyloxalus cevallosi","L",2,0.629360132819758,0.36625,0.73582581,18872.9985013447
-"Hyloxalus italoi","L",3,0.694098287514105,0.01925,0.51196345,56528.19113594
-"Leucostethus fugax","LQH",3,0.826582163324468,0.5815,0.48409218,34439.9713825343
-"Hyloxalus nexipus","LQ",1,0.856752518103289,-0.15025,0.63575313,7150.46079238201
-"Adelphobates quinquevittatus","L",2,0.883947230727965,0.315,0.37337503,25875.3158907264
+Especie,Config_FC,Param_RM,AUC_Validacion,Indice_Boyce_CBI,Umbral_SpecSens,Area_Presente_km2
+Adelphobates quinquevittatus,L,2,0.900,0.750,0.550,9162
+Ameerega bilinguis,LQH,1,0.820,0.510,0.480,23527
+Ameerega hahneli,LQH,2,0.850,0.510,0.430,14985
+Ameerega parvula,LQ,1,0.790,0.710,0.440,18320
+Hyloxalus bocagei,L,1,0.860,0.740,0.250,24689
+Hyloxalus cevallosi,L,2,0.960,0.610,0.500,6771
+Hyloxalus italoi,L,3,0.860,0.730,0.670,9234
+Hyloxalus nexipus,LQ,1,0.900,0.820,0.430,6098
+Hyloxalus pulchellus,LQ,3,0.920,0.800,0.210,9255
+Hyloxalus sauli,LQH,3,0.850,0.670,0.390,27503
+Hyloxalus yasuni,LQ,2,0.810,0.670,0.250,33072
+Leucostethus fugax,LQH,3,0.830,0.500,0.310,12779
+Ranitomeya variabilis,L,2,0.760,0.600,0.530,51846
+Ranitomeya ventrimaculata,LQH,1,0.730,0.410,0.500,40272

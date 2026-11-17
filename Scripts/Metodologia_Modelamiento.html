@@ -358,8 +358,8 @@ potencial en escenarios climáticos CMIP6</h1>
 </div>
 
 
-<div id="configuración-de-directorios" class="section level2">
-<h2>1. Configuración de directorios</h2>
+<div id="configuración-de-directorios" class="section level3">
+<h3>1. Configuración de directorios</h3>
 <pre class="r"><code># Definición de rutas
 root_d         &lt;- &quot;D:/Proyecto_RanasEcuador/&quot;
 path_in        &lt;- paste0(root_d, &quot;Capas_Originales/&quot;)  
@@ -382,8 +382,8 @@ for(dir in directorios) {
 ext_amazon &lt;- ext(-80.0, -75.0, -7.0, 2.0)
 zona_estudio &lt;- terra::vect(&quot;D:/shapeamaz/zestudio.shp&quot;)</code></pre>
 </div>
-<div id="procesamiento-de-capas-base" class="section level2">
-<h2>2. Procesamiento de capas base</h2>
+<div id="procesamiento-de-capas-base" class="section level3">
+<h3>2. Procesamiento de capas base</h3>
 <pre class="r"><code># Configuración del sistema de coordenadas
 archivo_molde &lt;- paste0(path_out, &quot;wc2.1_30s_bio_1.asc&quot;)
 molde &lt;- rast(archivo_molde)
@@ -414,8 +414,8 @@ bosque_final &lt;- mask(bosque_final, zona_alineada)
 # Guardado de capa de cobertura
 writeRaster(bosque_final, filename = paste0(path_out, &quot;hansen_bosque.asc&quot;), overwrite=TRUE)</code></pre>
 </div>
-<div id="selección-de-variables-ambientales" class="section level2">
-<h2>3. Selección de variables ambientales</h2>
+<div id="selección-de-variables-ambientales" class="section level3">
+<h3>3. Selección de variables ambientales</h3>
 <pre class="r"><code>bosque &lt;- rast(paste0(path_out, &quot;hansen_bosque.asc&quot;))
 names(bosque) &lt;- &quot;cobertura&quot; 
 
@@ -457,8 +457,8 @@ corrplot(matriz_cor, method = &quot;color&quot;, type = &quot;lower&quot;, col =
 title(&quot;Variables Seleccionadas (VIF &lt; 5)&quot;, line = 1)
 dev.off() </code></pre>
 </div>
-<div id="modelamiento-maxent-y-distribución-actual" class="section level2">
-<h2>4. Modelamiento Maxent y distribución actual</h2>
+<div id="modelamiento-maxent-y-distribución-actual" class="section level3">
+<h3>4. Modelamiento Maxent y distribución actual</h3>
 <pre class="r"><code># Carga de datos base 
 presencias_base &lt;- read.csv(paste0(path_in, &quot;presencias_total.csv&quot;))
 molde_presente &lt;- rast(paste0(path_out, &quot;stack_predictores_vif5_uvb.tif&quot;))
@@ -530,8 +530,8 @@ for(sp in unique(presencias_base$especie)){
 
 write.csv(tabla_metricas, paste0(res_dir, &quot;Tabla1_Metricas_Desempeno_VIF_UVB.csv&quot;), row.names = FALSE)</code></pre>
 </div>
-<div id="ensamblaje-multimodelo-cmip6" class="section level2">
-<h2>5. Ensamblaje multimodelo CMIP6</h2>
+<div id="ensamblaje-multimodelo-cmip6" class="section level3">
+<h3>5. Ensamblaje multimodelo CMIP6</h3>
 <pre class="r"><code># --- Fuente de información ---
 # base_url &lt;- &quot;[https://geodata.ucdavis.edu/cmip6/tiles/](https://geodata.ucdavis.edu/cmip6/tiles/)&quot;
 # gcm_models &lt;- c(&quot;MIROC6&quot;, &quot;IPSL-CM6A-LR&quot;, &quot;CNRM-CM6-1&quot;)
@@ -606,8 +606,8 @@ for (gcm in gcm_models) {
   }
 }</code></pre>
 </div>
-<div id="idoneidad-del-hábitat" class="section level2">
-<h2>6. Idoneidad del hábitat</h2>
+<div id="idoneidad-del-hábitat" class="section level3">
+<h3>6. Idoneidad del hábitat</h3>
 <pre class="r"><code>tabla_areas &lt;- data.frame()
 
 for(sp in unique(presencias_base$especie)){
@@ -627,9 +627,9 @@ for(sp in unique(presencias_base$especie)){
   gc()
 }</code></pre>
 </div>
-<div id="incertidumbre-promedio-sd-y-análisis-de-similitud-ambiental-mess" class="section level2">
-<h2>7. Incertidumbre promedio (SD) y Análisis de similitud ambiental
-(MESS)</h2>
+<div id="incertidumbre-promedio-sd-y-análisis-de-similitud-ambiental-mess" class="section level3">
+<h3>7. Incertidumbre promedio (SD) y Análisis de similitud ambiental
+(MESS)</h3>
 <pre class="r"><code># Bucle analítico (Proyecciones)
 for(sp in unique(presencias_base$especie)){
   sp_tag &lt;- gsub(&quot; &quot;, &quot;_&quot;, sp)
@@ -683,8 +683,8 @@ for(sp in unique(presencias_base$especie)){
 
 write.csv(tabla_areas, paste0(res_dir, &quot;Tabla2_Areas_Especies.csv&quot;), row.names = FALSE)</code></pre>
 </div>
-<div id="riqueza-potencial" class="section level2">
-<h2>8. Riqueza potencial</h2>
+<div id="riqueza-potencial" class="section level3">
+<h3>8. Riqueza potencial</h3>
 <pre class="r"><code># Riqueza presente
 archivos_presente &lt;- list.files(path_binary, pattern = &quot;^Binario_Presente_.*\\.tif$&quot;, full.names = TRUE)
 stack_presente &lt;- rast(archivos_presente)
@@ -709,9 +709,9 @@ for(ssp in ssp_scenarios){
   }
 }</code></pre>
 </div>
-<div id="riqueza-promedio-en-el-sistema-nacional-de-áreas-protegidas-del-ecuador-snap" class="section level2">
-<h2>9. Riqueza promedio en el Sistema Nacional de Áreas Protegidas del
-Ecuador (SNAP)</h2>
+<div id="riqueza-promedio-en-el-sistema-nacional-de-áreas-protegidas-del-ecuador-snap" class="section level3">
+<h3>9. Riqueza promedio en el Sistema Nacional de Áreas Protegidas del
+Ecuador (SNAP)</h3>
 <pre class="r"><code># Intersección espacial de los poligonos del SNAP con la zona de estudio
 snap_raw &lt;- vect(&quot;D:/Proyecto_RanasEcuador/SNAP2026/snap_amazonia.shp&quot;)
 snap_proj &lt;- project(snap_raw, crs(riqueza_presente))
@@ -740,8 +740,8 @@ tabla_lmm_snap &lt;- do.call(rbind, lista_obs_snap) %&gt;%
   filter(Riqueza_Presente &gt;= 1) %&gt;%
   mutate(Escenario = as.factor(Escenario), Anio = as.factor(Anio), Parque = as.factor(Parque))</code></pre>
 </div>
-<div id="validación-estadística" class="section level2">
-<h2>10. Validación Estadística</h2>
+<div id="validación-estadística" class="section level3">
+<h3>10. Validación Estadística</h3>
 <pre class="r"><code>library(lme4)
 library(lmerTest)
 library(dplyr)
