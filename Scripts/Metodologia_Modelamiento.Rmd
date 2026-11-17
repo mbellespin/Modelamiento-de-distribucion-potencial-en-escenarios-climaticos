@@ -26,7 +26,7 @@ options(timeout = 600)
 ```
 
 
-## 1. Configuración de directorios
+### 1. Configuración de directorios
 
 
 ```{r directorios_y_rutas}
@@ -53,7 +53,7 @@ ext_amazon <- ext(-80.0, -75.0, -7.0, 2.0)
 zona_estudio <- terra::vect("D:/shapeamaz/zestudio.shp")
 ```
 
-## 2. Procesamiento de capas base
+### 2. Procesamiento de capas base
 
 
 ```{r preprocesamiento_hansen}
@@ -88,7 +88,7 @@ bosque_final <- mask(bosque_final, zona_alineada)
 writeRaster(bosque_final, filename = paste0(path_out, "hansen_bosque.asc"), overwrite=TRUE)
 ```
 
-## 3. Selección de variables ambientales
+### 3. Selección de variables ambientales
 
 
 ```{r seleccion_vif}
@@ -134,7 +134,7 @@ title("Variables Seleccionadas (VIF < 5)", line = 1)
 dev.off() 
 ```
 
-## 4. Modelamiento Maxent y distribución actual
+### 4. Modelamiento Maxent y distribución actual
 
 ```{r modelado_actual}
 # Carga de datos base 
@@ -211,7 +211,7 @@ write.csv(tabla_metricas, paste0(res_dir, "Tabla1_Metricas_Desempeno_VIF_UVB.csv
 ```
 
 
-## 5. Ensamblaje multimodelo CMIP6
+### 5. Ensamblaje multimodelo CMIP6
 
 ```{r cmip6_procesamiento}
 # --- Fuente de información ---
@@ -289,7 +289,7 @@ for (gcm in gcm_models) {
 }
 ```
 
-## 6. Idoneidad del hábitat
+### 6. Idoneidad del hábitat
 
 
 ```{r idoneidad_habitat}
@@ -314,7 +314,7 @@ for(sp in unique(presencias_base$especie)){
 ```
 
 
-## 7. Incertidumbre promedio (SD) y Análisis de similitud ambiental (MESS)
+### 7. Incertidumbre promedio (SD) y Análisis de similitud ambiental (MESS)
 
 
 ```{r proyecciones_incertidumbre}
@@ -374,7 +374,7 @@ write.csv(tabla_areas, paste0(res_dir, "Tabla2_Areas_Especies.csv"), row.names =
 
 
 
-## 8. Riqueza potencial
+### 8. Riqueza potencial
 
 ```{r riqueza_y_deltas}
 # Riqueza presente
@@ -402,7 +402,7 @@ for(ssp in ssp_scenarios){
 }
 ```
 
-## 9. Riqueza promedio en el Sistema Nacional de Áreas Protegidas del Ecuador (SNAP)
+### 9. Riqueza promedio en el Sistema Nacional de Áreas Protegidas del Ecuador (SNAP)
 
 ```{r extraccion_snap}
 # Intersección espacial de los poligonos del SNAP con la zona de estudio
@@ -435,7 +435,7 @@ tabla_lmm_snap <- do.call(rbind, lista_obs_snap) %>%
 
 ```
 
-## 10. Validación Estadística
+### 10. Validación Estadística
 
 ```{r validacion_estadistica_lmm}
 library(lme4)
