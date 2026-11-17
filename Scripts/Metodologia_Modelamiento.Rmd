@@ -1,9 +1,22 @@
 ---
-title: "Modelamiento espacial para distribución potencial en escenarios climáticos CMIP6"
+title: Modelamiento espacial para distribución potencial en escenarios climáticos
+  CMIP6
 author: "Michelle B. Espin Navarrete"
 date: "2026-11-05"
-output: html_document
+output: 
+  word_document:
+    highlight: tango
 ---
+
+
+```{r info_proyecto}
+# =====================================================================
+# Proyecto: Tesis - Distribución potencial de especies de la familia Dendrobatidae bajo escenarios de cambio climático SSP2-4.5 y SSP5-8.5 en la Amazonía ecuatoriana (2050, 2070 y 2090)
+# Autora: Michelle Belén Espin Navarrete
+# Año:    2026
+# =====================================================================
+
+```
 
 
 ```{r setup, include=FALSE}
